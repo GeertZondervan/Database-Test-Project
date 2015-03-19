@@ -47,4 +47,51 @@ public class DAO_ResultaatTest {
         assertEquals(resultaat, resultaat2);
 
     }
+    
+    @Test
+    public void testUpdate() throws SQLException {
+        Resultaat resultaat = new Resultaat();
+        resultaat.setModulenaam("Java Programmer 1");
+        resultaat.setResultaat(94);
+        resultaat.setVoldoende(true);
+        int id = manager.getDAO_Persoon().getPersoonId("Harthold", "Jensen");
+        resultaat.setIdPersoon(id);
+        manager.getDAO_Resultaat().create(resultaat);
+        
+        int resultaatId = manager.getDAO_Resultaat().getResultaatId(id, resultaat.getModulenaam());
+        Resultaat resultaat2 = (Resultaat) manager.getDAO_Resultaat().read(resultaatId);
+        assertNotNull("Resultaat from database not null?", resultaat2);
+        resultaat2.setIdPersoon(5);
+        resultaat2.setModulenaam("Java Programmer 2");
+        resultaat2.setResultaat(30);
+        resultaat2.setVoldoende(false);
+        
+        manager.getDAO_Resultaat().update(resultaat2);
+        
+        Resultaat resultaat3 = (Resultaat)manager.getDAO_Resultaat().read(id);
+        assertTrue(resultaat != resultaat3);
+    }
+    
+    @Test
+    public void testRead() throws SQLException {
+        Resultaat resultaat = new Resultaat();
+        resultaat.setModulenaam("Java Programmer 1");
+        resultaat.setResultaat(94);
+        resultaat.setVoldoende(true);
+        int id = manager.getDAO_Persoon().getPersoonId("Harthold", "Jensen");
+        resultaat.setIdPersoon(id);
+        
+        manager.getDAO_Resultaat().create(resultaat);
+        
+        int resultaatId = manager.getDAO_Resultaat().getResultaatId(id, resultaat.getModulenaam());
+        
+        Resultaat resultaat2 = (Resultaat) manager.getDAO_Resultaat().read(resultaatId);
+        
+        assertNotNull("PersoonId from database not null?", resultaat2.getIdPersoon());
+        assertNotNull("Modulenaam from database not null?", resultaat2.getModulenaam());
+        assertNotNull("Resultaat from database not null?", resultaat2.getResultaat());
+        assertNotNull("IsVoldoende from database not null?", resultaat2.isVoldoende());
+        
+        assertEquals(resultaat, resultaat2); 
+    }
 }
