@@ -70,20 +70,24 @@ public class DAO_Adres implements DAOInterface{
             connection = DAO_Manager.initializeDB();
         }
         Statement statement = connection.createStatement();
+        
+        try{
+            ResultSet rSet = statement.executeQuery("select straatnaam, huisnummer, toevoeging, postcode, woonplaats from Adres where id = " + id);
 
-        ResultSet rSet = statement.executeQuery("select straatnaam, huisnummer, toevoeging, postcode, woonplaats from Adres where id = " + id);
+            Adres adres = new Adres();
+            rSet.next();
+            adres.setStraatnaam(rSet.getString(1));
+            adres.setHuisnummer(rSet.getInt(2));
+            adres.setToevoeging(rSet.getString(3));
+            adres.setPostcode(rSet.getString(4));
+            adres.setWoonplaats(rSet.getString(5));
+            adres.setId(id); // toegevoegd
 
-        Adres adres = new Adres();
-        rSet.next();
-        adres.setStraatnaam(rSet.getString(1));
-        adres.setHuisnummer(rSet.getInt(2));
-        adres.setToevoeging(rSet.getString(3));
-        adres.setPostcode(rSet.getString(4));
-        adres.setWoonplaats(rSet.getString(5));
-        adres.setId(id); // toegevoegd
-
-        return adres;
-
+            return adres;
+        }
+        catch (Exception ex){
+            return null;
+        }
 
     }
     
