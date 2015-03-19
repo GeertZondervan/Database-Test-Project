@@ -1,7 +1,5 @@
-package test;
+package DAO;
 import java.sql.SQLException;
-
-import DAO.*;
 import static org.junit.Assert.*;
 
 import org.junit.After;
@@ -13,11 +11,10 @@ import org.junit.Test;
 import domein_klassen.Adres;
 
 public class DAO_AdresTest {
-	public class DAO_Adres {
+	
 	    static DAO_Manager manager;
 	    public DAO_AdresTest() {
-	    }
-	    
+                    }
 	    @BeforeClass
 	    public static void setUpClass() {
 	        manager = new DAO_Manager();
