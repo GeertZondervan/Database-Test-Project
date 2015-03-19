@@ -94,4 +94,24 @@ public class DAO_ResultaatTest {
         
         assertEquals(resultaat, resultaat2); 
     }
+    
+    public void testDelete() throws SQLException {
+        Resultaat resultaat = new Resultaat();
+        resultaat.setModulenaam("Java Programmer 1");
+        resultaat.setResultaat(94);
+        resultaat.setVoldoende(true);
+        int id = manager.getDAO_Persoon().getPersoonId("Harthold", "Jensen");
+        resultaat.setIdPersoon(id);
+        
+        manager.getDAO_Resultaat().create(resultaat);
+        
+        int resultaatId = manager.getDAO_Resultaat().getResultaatId(id, resultaat.getModulenaam());
+        manager.getDAO_Resultaat().delete(resultaatId);
+        
+        Resultaat resultaat2 = (Resultaat) manager.getDAO_Resultaat().read(resultaatId);
+        
+        assertNull(resultaat2);
+        
+    }
+    
 }
