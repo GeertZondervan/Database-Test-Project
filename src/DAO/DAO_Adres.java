@@ -96,8 +96,9 @@ public class DAO_Adres implements DAOInterface{
 				.executeQuery("select id from Adres where postcode = '"
 						+ postcode + "' and huisnummer = " + huisnummer);
 
-		rSet.next();
-		return rSet.getInt(1);
+		if (rSet.next())
+                    return rSet.getInt(1);
+                return -1;
 	}
 	
     @Override
