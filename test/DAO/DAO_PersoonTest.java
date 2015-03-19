@@ -2,7 +2,7 @@
 package DAO;
 
 import domein_klassen.POJO_Interface;
-import domein_klassen.Persoon;
+import domein_klassen.*;
 import java.sql.SQLException;
 import javax.naming.ldap.ManageReferralControl;
 import org.junit.After;
@@ -14,17 +14,44 @@ import static org.junit.Assert.*;
 
 public class DAO_PersoonTest {
     static DAO_Manager manager;
+    static Persoon persoon;
     public DAO_PersoonTest() {
     }
     
     @BeforeClass
     public static void setUpClass() {
+        persoon = new Persoon();
+        persoon.setVoornaam("VoorNaam");
+        persoon.setAchternaam("AchterNaam");
+        persoon.setTussenvoegsel("TV");
+        persoon.setGeboortedatum("11-11-1911");
+        Adres adres = new Adres();
+        adres.setStraatnaam("StraatNaam");
+        adres.setPostcode("2344LL");
+        adres.setHuisnummer(11);
+        adres.setToevoeging("B");
+        adres.setWoonplaats("Woonplaats");
+        persoon.setAdres(adres);
         manager = new DAO_Manager();
+        try{
+            manager.getDAO_Persoon().create(persoon);
+            persoon.setId(manager.getDAO_Persoon().getPersoonId("VoorNaam", "AchterNaam"));
+            adres.setId(manager.getDAO_Adres().getAdresId(adres.getPostcode(), adres.getHuisnummer()));
+        }
+        catch (SQLException ex){
+            ex.printStackTrace();
+        }
         
     }
     
     @AfterClass
     public static void tearDownClass() {
+        try{  
+        manager.getDAO_Persoon().delete(persoon.getId());
+        }
+        catch(SQLException ex){
+            ex.printStackTrace();
+        }
         try{
             manager.closeConnection();
         }
@@ -33,10 +60,11 @@ public class DAO_PersoonTest {
         }
     }
     
- //   @Before
-//    public void setUp() {
- //   }
-    
+   /*@Before
+    public void setUp() {
+        
+   }*/
+   
  //   @After
   //  public void tearDown() {
   //  }
@@ -47,33 +75,53 @@ public class DAO_PersoonTest {
     @Test
     public void testCreate() throws Exception {
         System.out.println("create");
-        Persoon obj = new Persoon();
-        obj.setVoornaam("VoorNaam");
-        obj.setAchternaam("AchterNaam");
-        obj.setTussenvoegsel("TV");
-        obj.setGeboortedatum("11-11-1911");
+        Persoon persoon = new Persoon();
+        persoon.setVoornaam("VoorNaam2");
+        persoon.setAchternaam("AchterNaam2");
+        persoon.setTussenvoegsel("TV2");
+        persoon.setGeboortedatum("11-11-1912");
+        Adres adres = new Adres();
+        adres.setStraatnaam("StraatNaam2");
+        adres.setPostcode("2344LM");
+        adres.setHuisnummer(12);
+        adres.setToevoeging("B2");
+        adres.setWoonplaats("Woonplaats2");
+        persoon.setAdres(adres);
         DAO_Persoon instance = manager.getDAO_Persoon();
-        instance.create(obj);
+        instance.create(persoon);
         
-        Persoon result = (Persoon)instance.read(instance.getPersoonId("VoorNaam", "AchterNaam"));
-        assertNotNull("obj, must not be null", obj);
+        Persoon result = (Persoon)instance.read(instance.getPersoonId("VoorNaam2", "AchterNaam2"));
+        int persoonId = result.getId();
+        assertNotNull("persoon, must not be null", persoon);
         assertNotNull("Result, must not be null", result);
-        assertEquals("id, must be equal", obj.getId(), result.getId());
-        assertEquals("geboortedatum, must be equal", obj.getGeboortedatum(), result.getGeboortedatum());
-        assertEquals("tussenvoegsel, must be equal", obj.getTussenvoegsel(), result.getTussenvoegsel());
+        assertTrue("id, must be positive", persoonId >= 0);
+        assertEquals("geboortedatum, must be equal", persoon.getGeboortedatum(), result.getGeboortedatum());
+        assertEquals("tussenvoegsel, must be equal", persoon.getTussenvoegsel(), result.getTussenvoegsel());
+        
+        instance.delete(persoonId);
     }
 
     /**
      * Test of update method, of class DAO_Persoon.
      */
-    @Test
+   @Test
     public void testUpdate() throws Exception {
         System.out.println("update");
-        POJO_Interface obj = null;
-        DAO_Persoon instance = null;
-        instance.update(obj);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        persoon.setAchternaam("AchterNaam3");
+        persoon.setVoornaam("Voornaam3");
+        manager.getDAO_Persoon().update(persoon);
+      
+        Persoon result = (Persoon)manager.getDAO_Persoon().read(persoon.getId());
+        
+        assertNotNull("persoon, must not be null", persoon);
+        assertNotNull("Result, must not be null", result);
+        assertEquals("geboortedatum, must be equal", persoon.getGeboortedatum(), result.getGeboortedatum());
+        assertEquals("tussenvoegsel, must be equal", persoon.getTussenvoegsel(), result.getTussenvoegsel());
+        assertEquals("Voornaam must be equal", persoon.getVoornaam(), result.getVoornaam());
+        assertEquals("Achternaam must be equel",persoon.getAchternaam(), result.getAchternaam());
+        assertEquals("AdresId must be equal", persoon.getIdAdres(), result.getIdAdres());
+        
+        
     }
 
     /**
@@ -82,13 +130,18 @@ public class DAO_PersoonTest {
     @Test
     public void testRead_int() throws Exception {
         System.out.println("read");
-        int id = 0;
-        DAO_Persoon instance = null;
-        POJO_Interface expResult = null;
-        POJO_Interface result = instance.read(id);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+        Persoon expResult = persoon;
+        Persoon result = (Persoon)manager.getDAO_Persoon().read(persoon.getId());
+        assertNotNull("expResult, must not be null", expResult);
+        assertNotNull("Result, must not be null", result);
+        assertEquals("geboortedatum, must be equal", expResult.getGeboortedatum(), result.getGeboortedatum());
+        assertEquals("tussenvoegsel, must be equal", expResult.getTussenvoegsel(), result.getTussenvoegsel());
+        assertEquals("Voornaam must be equal", expResult.getVoornaam(), result.getVoornaam());
+        assertEquals("Achternaam must be equel",expResult.getAchternaam(), result.getAchternaam());
+        assertEquals("AdresId must be equal", expResult.getIdAdres(), result.getIdAdres());
+        
+        
     }
 
     /**
@@ -96,15 +149,16 @@ public class DAO_PersoonTest {
      */
     @Test
     public void testRead_String_String() throws Exception {
-        System.out.println("read");
-        String voorNaam = "";
-        String achterNaam = "";
-        DAO_Persoon instance = null;
-        POJO_Interface expResult = null;
-        POJO_Interface result = instance.read(voorNaam, achterNaam);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        System.out.println("read2");
+        Persoon expResult = persoon;
+        Persoon result = (Persoon)manager.getDAO_Persoon().read(persoon.getVoornaam(), persoon.getAchternaam());
+        assertNotNull("expResult, must not be null", expResult);
+        assertNotNull("Result, must not be null", result);
+        assertEquals("geboortedatum, must be equal", expResult.getGeboortedatum(), result.getGeboortedatum());
+        assertEquals("tussenvoegsel, must be equal", expResult.getTussenvoegsel(), result.getTussenvoegsel());
+        assertEquals("Voornaam must be equal", expResult.getVoornaam(), result.getVoornaam());
+        assertEquals("Achternaam must be equel",expResult.getAchternaam(), result.getAchternaam());
+        assertEquals("AdresId must be equal", expResult.getIdAdres(), result.getIdAdres());
     }
 
     /**
@@ -113,14 +167,9 @@ public class DAO_PersoonTest {
     @Test
     public void testGetPersoonId() throws Exception {
         System.out.println("getPersoonId");
-        String voorNaam = "";
-        String achterNaam = "";
-        DAO_Persoon instance = null;
-        int expResult = 0;
-        int result = instance.getPersoonId(voorNaam, achterNaam);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        int expResult = persoon.getId();
+        int result = manager.getDAO_Persoon().getPersoonId(persoon.getVoornaam(), persoon.getAchternaam());
+        assertEquals("PersoonId must be the same",expResult, result);
     }
 
     /**
@@ -129,11 +178,29 @@ public class DAO_PersoonTest {
     @Test
     public void testDelete() throws Exception {
         System.out.println("delete");
-        int id = 0;
-        DAO_Persoon instance = null;
-        instance.delete(id);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+        Persoon persoon = new Persoon();
+        persoon.setVoornaam("VoorNaam4");
+        persoon.setAchternaam("AchterNaam4");
+        persoon.setTussenvoegsel("TV4");
+        persoon.setGeboortedatum("11-11-1914");
+        Adres adres = new Adres();
+        adres.setStraatnaam("StraatNaam4");
+        adres.setPostcode("2344LP");
+        adres.setHuisnummer(14);
+        adres.setToevoeging("B4");
+        adres.setWoonplaats("Woonplaats4");
+        persoon.setAdres(adres);
+        DAO_Persoon instance = manager.getDAO_Persoon();
+        instance.create(persoon);
+        
+        int persoonId = instance.getPersoonId("VoorNaam4", "AchterNaam4");
+        assertTrue("persoonId is positive",persoonId >= 0);
+        instance.delete(persoonId);
+        persoonId = instance.getPersoonId("VoorNaam4", "AchterNaam4");
+        assertEquals("persoonId = -1; persoon is deleted",persoonId, -1);
+        
+        
     }
     
 }

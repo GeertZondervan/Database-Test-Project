@@ -16,7 +16,6 @@ DAO_Persoon(Connection connection){
             throw new IllegalArgumentException("Geen Persoon object.");
         }
 
-        //  int id = ((Persoon) obj).getId();
         String voorNaam = ((Persoon) obj).getVoornaam();
         String achterNaam = ((Persoon) obj).getAchternaam();
         String tussenVoegsel = ((Persoon) obj).getTussenvoegsel();
@@ -27,8 +26,12 @@ DAO_Persoon(Connection connection){
         }
         
         DAO_Manager manager = new DAO_Manager();
+        
         int adresId = manager.getDAO_Adres().getAdresId(adres.getPostcode(), adres.getHuisnummer());
-		
+	if (adresId < 0){
+            manager.getDAO_Adres().create(adres);
+            adresId = manager.getDAO_Adres().getAdresId(adres.getPostcode(), adres.getHuisnummer());
+        }	
         //int adresId = ((Persoon) obj).getIdAdres();
 
         if (connection == null) {
@@ -114,21 +117,24 @@ DAO_Persoon(Connection connection){
         persoon.setAdres((Adres)(daoAdres.read(rSet.getInt(4))));
         DAO_Resultaat daoResultaat = new DAO_Resultaat(connection);
         persoon.setResultaten(daoResultaat.findResultaten(persoon.getId()));
+        persoon.setVoornaam(voorNaam);
+        persoon.setAchternaam(achterNaam);
         
         return persoon;
 
     }
   
-  	public int getPersoonId(String voorNaam, String achterNaam) throws SQLException {
-      if (connection == null) {
-           connection = DAO_Manager.initializeDB();
-       }
-       Statement statement = connection.createStatement();
+    public int getPersoonId(String voorNaam, String achterNaam) throws SQLException {
+        if (connection == null) {
+            connection = DAO_Manager.initializeDB();
+        }
+        Statement statement = connection.createStatement();
 
-       ResultSet rSet = statement.executeQuery("select id from Persoon where voorNaam = '" + voorNaam + "' and achterNaam = '" + achterNaam + "'");
-       rSet.next();
-              
-       return rSet.getInt(1);
+        ResultSet rSet = statement.executeQuery("select id from Persoon where voorNaam = '" + voorNaam + "' and achterNaam = '" + achterNaam + "'");
+        if (rSet.next()) {
+            return rSet.getInt(1);
+        }
+        return -1;
      
  }
     
