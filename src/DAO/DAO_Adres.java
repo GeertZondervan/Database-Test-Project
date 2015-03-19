@@ -1,4 +1,3 @@
-
 package DAO;
 
 import domein_klassen.*;
@@ -7,12 +6,13 @@ import java.sql.*;
 
 import DAO.DAO_Manager;
 
-public class DAO_Adres implements DAOInterface{
+public class DAO_Adres implements DAOInterface {
+
     private Connection connection;
-    
-    DAO_Adres(Connection connection){
+
+    DAO_Adres(Connection connection) {
         this.connection = connection;
-}
+    }
 
     @Override
     public void create(POJO_Interface obj) throws SQLException {
@@ -37,9 +37,6 @@ public class DAO_Adres implements DAOInterface{
 
     }
 
-    
-   
-    
     @Override
     public void update(POJO_Interface obj) throws SQLException {
         if (!(obj instanceof Adres)) {
@@ -62,16 +59,14 @@ public class DAO_Adres implements DAOInterface{
 
     }
 
-    
-    
     @Override
     public POJO_Interface read(int id) throws SQLException {
         if (connection == null) {
             connection = DAO_Manager.initializeDB();
         }
         Statement statement = connection.createStatement();
-        
-        try{
+
+        try {
             ResultSet rSet = statement.executeQuery("select straatnaam, huisnummer, toevoeging, postcode, woonplaats from Adres where id = " + id);
 
             Adres adres = new Adres();
@@ -84,43 +79,42 @@ public class DAO_Adres implements DAOInterface{
             adres.setId(id); // toegevoegd
 
             return adres;
-        }
-        catch (Exception ex){
+        } catch (Exception ex) {
             return null;
         }
 
     }
-    
-   
-	public int getAdresId(String postcode, int huisnummer) throws SQLException {
-		if (connection == null) {
-			connection = DAO_Manager.initializeDB();
-		}
-		Statement statement = connection.createStatement();
 
-		ResultSet rSet = statement
-				.executeQuery("select id from Adres where postcode = '"
-						+ postcode + "' and huisnummer = " + huisnummer);
+    public int getAdresId(String postcode, int huisnummer) throws SQLException {
+        if (connection == null) {
+            connection = DAO_Manager.initializeDB();
+        }
+        Statement statement = connection.createStatement();
 
-		if (rSet.next())
-                    return rSet.getInt(1);
-                return -1;
-	}
-	
-	public int getAdresId(String postcode, int huisnummer, String toevoeging) throws SQLException {
-		if (connection == null) {
-			connection = DAO_Manager.initializeDB();
-		}
-		Statement statement = connection.createStatement();
+        ResultSet rSet = statement
+                .executeQuery("select id from Adres where postcode = '"
+                        + postcode + "' and huisnummer = " + huisnummer);
 
-		ResultSet rSet = statement
-				.executeQuery("select id from Adres where postcode = '"
-						+ postcode + "' and huisnummer = " + huisnummer + " and toevoeging = '" + toevoeging + "'");
+        if (rSet.next()) {
+            return rSet.getInt(1);
+        }
+        return -1;
+    }
 
-		rSet.next();
-		return rSet.getInt(1);
-	}
-	
+    public int getAdresId(String postcode, int huisnummer, String toevoeging) throws SQLException {
+        if (connection == null) {
+            connection = DAO_Manager.initializeDB();
+        }
+        Statement statement = connection.createStatement();
+
+        ResultSet rSet = statement
+                .executeQuery("select id from Adres where postcode = '"
+                        + postcode + "' and huisnummer = " + huisnummer + " and toevoeging = '" + toevoeging + "'");
+
+        rSet.next();
+        return rSet.getInt(1);
+    }
+
     @Override
     public void delete(int id) throws SQLException {
 
@@ -133,8 +127,4 @@ public class DAO_Adres implements DAOInterface{
 
     }
 
-
 }
-
-    
-
