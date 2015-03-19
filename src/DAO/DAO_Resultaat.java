@@ -1,4 +1,3 @@
-
 package DAO;
 
 import domein_klassen.Adres;
@@ -10,12 +9,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class DAO_Resultaat implements DAOInterface{
+public class DAO_Resultaat implements DAOInterface {
+
     private Connection connection;
-    
-    DAO_Resultaat(Connection connection){
+
+    DAO_Resultaat(Connection connection) {
         this.connection = connection;
-}
+    }
 
     @Override
     public void create(POJO_Interface obj) throws SQLException {
@@ -34,14 +34,11 @@ public class DAO_Resultaat implements DAOInterface{
 
         Statement statement = connection.createStatement();
         statement.executeUpdate("insert into Resultaat (modulenaam, resultaat, voldoende, persoonId) values ('"
-                 + modulenaam + "', " + resultaat + ", '" + voldoende +
-                 "', " + persoonId + ")");
+                + modulenaam + "', " + resultaat + ", '" + voldoende
+                + "', " + persoonId + ")");
 
     }
 
-    
-   
-    
     @Override
     public void update(POJO_Interface obj) throws SQLException {
         if (!(obj instanceof Resultaat)) {
@@ -62,7 +59,7 @@ public class DAO_Resultaat implements DAOInterface{
                 + idPersoon + " where id = " + id);
 
     }
-    
+
     @Override
     public POJO_Interface read(int id) throws SQLException {
         if (connection == null) {
@@ -77,19 +74,32 @@ public class DAO_Resultaat implements DAOInterface{
         resultaat.setModulenaam(rSet.getString(1));
         resultaat.setResultaat(rSet.getFloat(2));
         String voldoende = rSet.getString(3); // We hadden de voldoende toch als eeen char weergegeven in de database? Ik kan de getChar methode niet vinden 
-        if (voldoende.equals("T"))
+        if (voldoende.equals("T")) {
             resultaat.setVoldoende(true);
-        else
+        } else {
             resultaat.setVoldoende(false);
+        }
         resultaat.setIdPersoon(rSet.getInt(4));
         resultaat.setId(id);
 
         // set adres
         return resultaat;
 
-
     }
-    
+
+    public int getResultaatId(int persoonId, String moduleNaam) throws SQLException {
+        if (connection == null) {
+            connection = DAO_Manager.initializeDB();
+        }
+        Statement statement = connection.createStatement();
+
+        ResultSet rSet = statement.executeQuery("select id from Resultaat where persoonId = " + persoonId + " and moduleNaam = '" + moduleNaam + "'");
+
+        Resultaat resultaat = new Resultaat();
+        rSet.next();
+        return rSet.getInt(1);
+    }
+
     @Override
     public void delete(int id) throws SQLException {
 
@@ -101,7 +111,7 @@ public class DAO_Resultaat implements DAOInterface{
         statement.executeUpdate("delete from Resultaat where id = " + id);
 
     }
-    
+
     public Resultaat[] findResultaten(int idPersoon) throws SQLException {
         if (connection == null) {
             connection = DAO_Manager.initializeDB();
@@ -110,7 +120,6 @@ public class DAO_Resultaat implements DAOInterface{
 
         ResultSet rSet = statement.executeQuery("select id, modulenaam, resultaat, voldoende from Resultaat where persoonId = " + idPersoon);
 
-        
         //ArrayList<Resultaat> list = new ArrayList<>();
         Resultaat[] lijst = new Resultaat[10];
         int i = 0;
@@ -130,7 +139,7 @@ public class DAO_Resultaat implements DAOInterface{
             i++;
             //list.add(resultaat);
         }
-        
+
 //        Resultaat[] resultaten = (Resultaat[])(list.toArray());
 //        return resultaten;
         return lijst;

@@ -1,12 +1,22 @@
-
 package domein_klassen;
 
 public class Resultaat implements POJO_Interface {
+
     private int id;
     private String modulenaam;
     private float resultaat;
     private boolean voldoende;
     private int idPersoon;
+
+    @Override
+    public boolean equals(Object resultaat2) {
+        if (this.getModulenaam().equals(((Resultaat) resultaat2).getModulenaam()) && this.getResultaat().equals(((Resultaat) resultaat2).getResultaat())
+                && this.getIdPersoon().equals(((Resultaat) resultaat2).getIdPersoon())) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public int getId() {
         return id;
@@ -24,7 +34,7 @@ public class Resultaat implements POJO_Interface {
         this.modulenaam = modulenaam;
     }
 
-    public float getResultaat() {
+    public Float getResultaat() {
         return resultaat;
     }
 
@@ -39,8 +49,8 @@ public class Resultaat implements POJO_Interface {
     public void setVoldoende(boolean voldoende) {
         this.voldoende = voldoende;
     }
-    
-    public int getIdPersoon() {
+
+    public Integer getIdPersoon() {
         return idPersoon;
     }
 

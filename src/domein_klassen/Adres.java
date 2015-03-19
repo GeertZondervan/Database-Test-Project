@@ -1,7 +1,7 @@
-
 package domein_klassen;
 
-public class Adres implements POJO_Interface{
+public class Adres implements POJO_Interface {
+
     private int id;
     private String straatnaam;
     private Integer huisnummer;
@@ -9,18 +9,17 @@ public class Adres implements POJO_Interface{
     private String postcode;
     private String woonplaats;
 
-        @Override
-    public boolean equals(Object adres2){
-    	if(this.getStraatnaam().equals(((Adres) adres2).getStraatnaam()) && this.getHuisnummer().equals(((Adres) adres2).getHuisnummer()) 
-    			&& this.getToevoeging().equals(((Adres) adres2).getToevoeging()) && this.getPostcode().equals(((Adres) adres2).getPostcode())
-    			&& this.getWoonplaats().equals(((Adres) adres2).getWoonplaats())){
-    		return true;
-    	}  	
-    	else{
-    		return false;
-    	}
+    @Override
+    public boolean equals(Object adres2) {
+        if (this.getStraatnaam().equals(((Adres) adres2).getStraatnaam()) && this.getHuisnummer().equals(((Adres) adres2).getHuisnummer())
+                && this.getToevoeging().equals(((Adres) adres2).getToevoeging()) && this.getPostcode().equals(((Adres) adres2).getPostcode())
+                && this.getWoonplaats().equals(((Adres) adres2).getWoonplaats())) {
+            return true;
+        } else {
+            return false;
+        }
     }
-    
+
     public int getId() {
         return id;
     }
@@ -68,6 +67,5 @@ public class Adres implements POJO_Interface{
     public void setWoonplaats(String woonplaats) {
         this.woonplaats = woonplaats;
     }
-    
-    
+
 }
