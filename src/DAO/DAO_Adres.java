@@ -5,6 +5,8 @@ import domein_klassen.*;
 
 import java.sql.*;
 
+import DAO.DAO_Manager;
+
 public class DAO_Adres implements DAOInterface{
     private Connection connection;
     
@@ -99,6 +101,20 @@ public class DAO_Adres implements DAOInterface{
 		if (rSet.next())
                     return rSet.getInt(1);
                 return -1;
+	}
+	
+	public int getAdresId(String postcode, int huisnummer, String toevoeging) throws SQLException {
+		if (connection == null) {
+			connection = DAO_Manager.initializeDB();
+		}
+		Statement statement = connection.createStatement();
+
+		ResultSet rSet = statement
+				.executeQuery("select id from Adres where postcode = '"
+						+ postcode + "' and huisnummer = " + huisnummer + " and toevoeging = '" + toevoeging + "'");
+
+		rSet.next();
+		return rSet.getInt(1);
 	}
 	
     @Override
