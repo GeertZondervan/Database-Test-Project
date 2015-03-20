@@ -27,7 +27,12 @@ public class DAO_Resultaat implements DAOInterface {
         float resultaat = ((Resultaat) obj).getResultaat();
         char voldoende = ((Resultaat) obj).isVoldoende() ? 'T' : 'F';
         int persoonId = ((Resultaat) obj).getIdPersoon();
-
+        
+        if(modulenaam == null || resultaat == 0.0f || persoonId == 0){
+            throw new IllegalArgumentException("Geen volledig resultaat!");
+        }
+        
+        else{
         if (connection == null) {
             connection = DAO_Manager.initializeDB();
         }
@@ -36,7 +41,7 @@ public class DAO_Resultaat implements DAOInterface {
         statement.executeUpdate("insert into Resultaat (modulenaam, resultaat, voldoende, persoonId) values ('"
                 + modulenaam + "', " + resultaat + ", '" + voldoende
                 + "', " + persoonId + ")");
-
+        }
     }
 
     @Override
@@ -49,15 +54,19 @@ public class DAO_Resultaat implements DAOInterface {
         String modulenaam = ((Resultaat) obj).getModulenaam();
         float resultaat = ((Resultaat) obj).getResultaat();
         char voldoende = ((Resultaat) obj).isVoldoende() ? 'T' : 'F';
-        int idPersoon = ((Resultaat) obj).getIdPersoon();
-
-        if (connection == null) {
-            connection = DAO_Manager.initializeDB();
+        int persoonId = ((Resultaat) obj).getIdPersoon();
+        
+        if(modulenaam == null || resultaat == 0.0f || persoonId == 0){
+            throw new IllegalArgumentException("Geen volledig resultaat!");
         }
-        Statement statement = connection.createStatement();
-        statement.executeUpdate("update Resultaat set modulenaam = '" + modulenaam + "', resultaat = " + resultaat + ", voldoende = '" + voldoende + "', persoonId = "
-                + idPersoon + " where id = " + id);
-
+        else{
+            if (connection == null) {
+                connection = DAO_Manager.initializeDB();
+            }
+            Statement statement = connection.createStatement();
+            statement.executeUpdate("update Resultaat set modulenaam = '" + modulenaam + "', resultaat = " + resultaat + ", voldoende = '" + voldoende + "', persoonId = "
+                    + persoonId + " where id = " + id);
+        }
     }
 
     @Override
@@ -66,7 +75,7 @@ public class DAO_Resultaat implements DAOInterface {
             connection = DAO_Manager.initializeDB();
         }
         Statement statement = connection.createStatement();
-
+        try{
         ResultSet rSet = statement.executeQuery("select modulenaam, resultaat, voldoende, persoonId from Resultaat where id = " + id);
 
         Resultaat resultaat = new Resultaat();
@@ -84,7 +93,10 @@ public class DAO_Resultaat implements DAOInterface {
 
         // set adres
         return resultaat;
-
+        }
+        catch(Exception ex){
+            return null;
+        }
     }
 
     public int getResultaatId(int persoonId, String moduleNaam) throws SQLException {
@@ -96,8 +108,10 @@ public class DAO_Resultaat implements DAOInterface {
         ResultSet rSet = statement.executeQuery("select id from Resultaat where persoonId = " + persoonId + " and moduleNaam = '" + moduleNaam + "'");
 
         Resultaat resultaat = new Resultaat();
-        rSet.next();
-        return rSet.getInt(1);
+        if(rSet.next()){
+            return rSet.getInt(1);
+        }
+        return -1;
     }
 
     @Override
@@ -107,9 +121,14 @@ public class DAO_Resultaat implements DAOInterface {
             connection = DAO_Manager.initializeDB();
         }
         Statement statement = connection.createStatement();
-
-        statement.executeUpdate("delete from Resultaat where id = " + id);
-
+        try{
+            Resultaat resultaat = (Resultaat)read(id);
+            resultaat.getModulenaam();
+            statement.executeUpdate("delete from Resultaat where id = " + id);
+        }
+        catch(Exception ex){
+            throw new IllegalArgumentException("Geen resultaat gevonden op dit ID");
+        }
     }
 
     public Resultaat[] findResultaten(int idPersoon) throws SQLException {

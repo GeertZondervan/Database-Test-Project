@@ -11,6 +11,10 @@ import org.junit.Test;
 
 import domein_klassen.Adres;
 import domein_klassen.Persoon;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 
 public class DAO_AdresTest {
 
@@ -55,17 +59,23 @@ public class DAO_AdresTest {
 
     }
     
-    
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void testCreateException() throws SQLException{
-                      
-        manager.getDAO_Adres().create(new Persoon());
-          
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+    @Test
+    public void testCreateIllegalArgument() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Geen Adres object.");
+        try {
+            manager.getDAO_Adres().create(new Persoon());
+        } catch (SQLException ex) {
+            Logger.getLogger(DAO_AdresTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    
-    @Test(expected = IllegalArgumentException.class)
+      
+    @Test
     public void testCreateNull() throws SQLException{
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Geen volledig adres!");
         Adres adres = new Adres();
         manager.getDAO_Adres().create(adres);
     }
@@ -97,6 +107,25 @@ public class DAO_AdresTest {
     }
     
     @Test
+    public void testUpdateIllegalArgument() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Geen Adres object.");
+        try {
+            manager.getDAO_Adres().update(new Persoon());
+        } catch (SQLException ex) {
+            Logger.getLogger(DAO_AdresTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+      @Test
+    public void testUpdateNull() throws SQLException{
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Geen volledig adres!");
+        Adres adres = new Adres();
+        manager.getDAO_Adres().update(adres);
+    }
+    
+    @Test
     public void testRead() throws SQLException {
         Adres adres = new Adres();
 
@@ -121,6 +150,12 @@ public class DAO_AdresTest {
     }
     
     @Test
+    public void testReadNotFound() throws SQLException {
+        Adres adres = (Adres)manager.getDAO_Adres().read(-100);
+        assertNull(adres);
+    }
+    
+    @Test
     public void testDelete() throws SQLException {
         Adres adres = new Adres();
 
@@ -137,6 +172,18 @@ public class DAO_AdresTest {
         Adres adres2 = (Adres)manager.getDAO_Adres().read(adresId);
         assertNull(adres2);
         
+    }
+    
+    @Test
+    public void testDeleteNotFound() {
+        thrown.expect(IllegalArgumentException.class);
+        
+        thrown.expectMessage("Geen adres gevonden op dit ID");
+        try {
+            manager.getDAO_Adres().delete(-100);
+        } catch (SQLException ex) {
+            Logger.getLogger(DAO_AdresTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }

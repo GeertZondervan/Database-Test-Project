@@ -1,9 +1,11 @@
-
 package DAO;
 
+import static DAO.DAO_AdresTest.manager;
 import domein_klassen.POJO_Interface;
 import domein_klassen.*;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.ldap.ManageReferralControl;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -11,13 +13,17 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Rule;
+import org.junit.rules.ExpectedException;
 
 public class DAO_PersoonTest {
+
     static DAO_Manager manager;
     static Persoon persoon;
+
     public DAO_PersoonTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
         persoon = new Persoon();
@@ -33,42 +39,37 @@ public class DAO_PersoonTest {
         adres.setWoonplaats("Woonplaats");
         persoon.setAdres(adres);
         manager = new DAO_Manager();
-        try{
+        try {
             manager.getDAO_Persoon().create(persoon);
             persoon.setId(manager.getDAO_Persoon().getPersoonId("VoorNaam", "AchterNaam"));
             adres.setId(manager.getDAO_Adres().getAdresId(adres.getPostcode(), adres.getHuisnummer()));
-        }
-        catch (SQLException ex){
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        
+
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
-        try{  
-        manager.getDAO_Persoon().delete(persoon.getId());
-        }
-        catch(SQLException ex){
+        try {
+            manager.getDAO_Persoon().delete(persoon.getId());
+        } catch (SQLException ex) {
             ex.printStackTrace();
         }
-        try{
+        try {
             manager.closeConnection();
-        }
-        catch(SQLException ex){
+        } catch (SQLException ex) {
             System.out.println("Connection is not closed");
         }
     }
-    
-   /*@Before
-    public void setUp() {
-        
-   }*/
-   
- //   @After
-  //  public void tearDown() {
-  //  }
 
+    /*@Before
+     public void setUp() {
+        
+     }*/
+ //   @After
+    //  public void tearDown() {
+    //  }
     /**
      * Test of create method, of class DAO_Persoon.
      */
@@ -89,39 +90,80 @@ public class DAO_PersoonTest {
         persoon.setAdres(adres);
         DAO_Persoon instance = manager.getDAO_Persoon();
         instance.create(persoon);
-        
-        Persoon result = (Persoon)instance.read(instance.getPersoonId("VoorNaam2", "AchterNaam2"));
+
+        Persoon result = (Persoon) instance.read(instance.getPersoonId("VoorNaam2", "AchterNaam2"));
         int persoonId = result.getId();
         assertNotNull("persoon, must not be null", persoon);
         assertNotNull("Result, must not be null", result);
         assertTrue("id, must be positive", persoonId >= 0);
         assertEquals("geboortedatum, must be equal", persoon.getGeboortedatum(), result.getGeboortedatum());
         assertEquals("tussenvoegsel, must be equal", persoon.getTussenvoegsel(), result.getTussenvoegsel());
-        
+
         instance.delete(persoonId);
+    }
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    @Test
+    public void testCreateIllegalArgument() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Geen Persoon object.");
+        try {
+            manager.getDAO_Persoon().create(new Adres());
+        } catch (SQLException ex) {
+            Logger.getLogger(DAO_PersoonTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test
+    public void testCreateNull() throws SQLException {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Geen volledig persoon!");
+        Persoon persoon = new Persoon();
+        manager.getDAO_Persoon().create(persoon);
     }
 
     /**
      * Test of update method, of class DAO_Persoon.
      */
-   @Test
+    @Test
     public void testUpdate() throws Exception {
         System.out.println("update");
         persoon.setAchternaam("AchterNaam3");
         persoon.setVoornaam("Voornaam3");
         manager.getDAO_Persoon().update(persoon);
-      
-        Persoon result = (Persoon)manager.getDAO_Persoon().read(persoon.getId());
-        
+
+        Persoon result = (Persoon) manager.getDAO_Persoon().read(persoon.getId());
+
         assertNotNull("persoon, must not be null", persoon);
         assertNotNull("Result, must not be null", result);
         assertEquals("geboortedatum, must be equal", persoon.getGeboortedatum(), result.getGeboortedatum());
         assertEquals("tussenvoegsel, must be equal", persoon.getTussenvoegsel(), result.getTussenvoegsel());
         assertEquals("Voornaam must be equal", persoon.getVoornaam(), result.getVoornaam());
-        assertEquals("Achternaam must be equel",persoon.getAchternaam(), result.getAchternaam());
+        assertEquals("Achternaam must be equel", persoon.getAchternaam(), result.getAchternaam());
         assertEquals("AdresId must be equal", persoon.getIdAdres(), result.getIdAdres());
-        
-        
+
+    }
+
+    @Test
+    public void testUpdateIllegalArgument() {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Geen Persoon object.");
+        try {
+            manager.getDAO_Persoon().update(new Adres());
+        } catch (SQLException ex) {
+            Logger.getLogger(DAO_PersoonTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @Test
+    public void testUpdateNull() throws SQLException {
+        thrown.expect(IllegalArgumentException.class);
+        thrown.expectMessage("Geen volledig persoon!");
+        Persoon persoon2 = new Persoon();
+        persoon2.setAdres((Adres) manager.getDAO_Adres().read(3));
+        manager.getDAO_Persoon().update(persoon2);
     }
 
     /**
@@ -130,18 +172,17 @@ public class DAO_PersoonTest {
     @Test
     public void testRead_int() throws Exception {
         System.out.println("read");
-        
+
         Persoon expResult = persoon;
-        Persoon result = (Persoon)manager.getDAO_Persoon().read(persoon.getId());
+        Persoon result = (Persoon) manager.getDAO_Persoon().read(persoon.getId());
         assertNotNull("expResult, must not be null", expResult);
         assertNotNull("Result, must not be null", result);
         assertEquals("geboortedatum, must be equal", expResult.getGeboortedatum(), result.getGeboortedatum());
         assertEquals("tussenvoegsel, must be equal", expResult.getTussenvoegsel(), result.getTussenvoegsel());
         assertEquals("Voornaam must be equal", expResult.getVoornaam(), result.getVoornaam());
-        assertEquals("Achternaam must be equel",expResult.getAchternaam(), result.getAchternaam());
+        assertEquals("Achternaam must be equel", expResult.getAchternaam(), result.getAchternaam());
         assertEquals("AdresId must be equal", expResult.getIdAdres(), result.getIdAdres());
-        
-        
+
     }
 
     /**
@@ -151,14 +192,26 @@ public class DAO_PersoonTest {
     public void testRead_String_String() throws Exception {
         System.out.println("read2");
         Persoon expResult = persoon;
-        Persoon result = (Persoon)manager.getDAO_Persoon().read(persoon.getVoornaam(), persoon.getAchternaam());
+        Persoon result = (Persoon) manager.getDAO_Persoon().read(persoon.getVoornaam(), persoon.getAchternaam());
         assertNotNull("expResult, must not be null", expResult);
         assertNotNull("Result, must not be null", result);
         assertEquals("geboortedatum, must be equal", expResult.getGeboortedatum(), result.getGeboortedatum());
         assertEquals("tussenvoegsel, must be equal", expResult.getTussenvoegsel(), result.getTussenvoegsel());
         assertEquals("Voornaam must be equal", expResult.getVoornaam(), result.getVoornaam());
-        assertEquals("Achternaam must be equel",expResult.getAchternaam(), result.getAchternaam());
+        assertEquals("Achternaam must be equel", expResult.getAchternaam(), result.getAchternaam());
         assertEquals("AdresId must be equal", expResult.getIdAdres(), result.getIdAdres());
+    }
+
+    @Test
+    public void testReadNotFound() throws SQLException {
+        Persoon persoon = (Persoon) manager.getDAO_Persoon().read(-100);
+        assertNull(persoon);
+    }
+
+    @Test
+    public void testReadStringNotFound() throws SQLException {
+        Persoon persoon = (Persoon) manager.getDAO_Persoon().read("Bob", "Klas");
+        assertNull(persoon);
     }
 
     /**
@@ -169,7 +222,7 @@ public class DAO_PersoonTest {
         System.out.println("getPersoonId");
         int expResult = persoon.getId();
         int result = manager.getDAO_Persoon().getPersoonId(persoon.getVoornaam(), persoon.getAchternaam());
-        assertEquals("PersoonId must be the same",expResult, result);
+        assertEquals("PersoonId must be the same", expResult, result);
     }
 
     /**
@@ -178,7 +231,7 @@ public class DAO_PersoonTest {
     @Test
     public void testDelete() throws Exception {
         System.out.println("delete");
-        
+
         Persoon persoon = new Persoon();
         persoon.setVoornaam("VoorNaam4");
         persoon.setAchternaam("AchterNaam4");
@@ -193,14 +246,25 @@ public class DAO_PersoonTest {
         persoon.setAdres(adres);
         DAO_Persoon instance = manager.getDAO_Persoon();
         instance.create(persoon);
-        
+
         int persoonId = instance.getPersoonId("VoorNaam4", "AchterNaam4");
-        assertTrue("persoonId is positive",persoonId >= 0);
+        assertTrue("persoonId is positive", persoonId >= 0);
         instance.delete(persoonId);
         persoonId = instance.getPersoonId("VoorNaam4", "AchterNaam4");
-        assertEquals("persoonId = -1; persoon is deleted",persoonId, -1);
-        
-        
+        assertEquals("persoonId = -1; persoon is deleted", persoonId, -1);
+
     }
-    
+
+    @Test
+    public void testDeleteNotFound() {
+        thrown.expect(IllegalArgumentException.class);
+
+        thrown.expectMessage("Geen persoon gevonden op dit ID");
+        try {
+            manager.getDAO_Persoon().delete(-100);
+        } catch (SQLException ex) {
+            Logger.getLogger(DAO_PersoonTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
 }

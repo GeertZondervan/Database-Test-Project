@@ -138,6 +138,8 @@ public class DAO_Adres implements DAOInterface {
         }
         Statement statement = connection.createStatement();
         try{
+            Adres adres = (Adres)read(id);
+            adres.getHuisnummer();
             statement.executeUpdate("delete from Adres where id = " + id);
         }
         catch(Exception ex){
