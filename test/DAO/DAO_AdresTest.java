@@ -10,6 +10,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import domein_klassen.Adres;
+import domein_klassen.Persoon;
 
 public class DAO_AdresTest {
 
@@ -52,6 +53,21 @@ public class DAO_AdresTest {
         System.out.println(adres2.getStraatnaam());
         assertEquals(adres, adres2);
 
+    }
+    
+    
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateException() throws SQLException{
+                      
+        manager.getDAO_Adres().create(new Persoon());
+          
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testCreateNull() throws SQLException{
+        Adres adres = new Adres();
+        manager.getDAO_Adres().create(adres);
     }
 
     @Test

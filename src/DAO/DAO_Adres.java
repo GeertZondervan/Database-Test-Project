@@ -25,16 +25,21 @@ public class DAO_Adres implements DAOInterface {
         String toevoeging = ((Adres) obj).getToevoeging();
         String postcode = ((Adres) obj).getPostcode();
         String woonplaats = ((Adres) obj).getWoonplaats();
-
-        if (connection == null) {
-            connection = DAO_Manager.initializeDB();
+        
+        if(straatnaam == null || huisnummer == 0 || postcode == null || woonplaats == null){
+            throw new IllegalArgumentException("Geen volledig adres!");
+            
         }
+        else{
+            if (connection == null) {
+                connection = DAO_Manager.initializeDB();
+            }
 
-        Statement statement = connection.createStatement();
-        statement.executeUpdate("insert into Adres (straatnaam, huisnummer, toevoeging, postcode, woonplaats) values ('"
-                + straatnaam + "', '" + huisnummer + "', '" + toevoeging
-                + "', '" + postcode + "', '" + woonplaats + "')");
-
+            Statement statement = connection.createStatement();
+            statement.executeUpdate("insert into Adres (straatnaam, huisnummer, toevoeging, postcode, woonplaats) values ('"
+                    + straatnaam + "', '" + huisnummer + "', '" + toevoeging
+                    + "', '" + postcode + "', '" + woonplaats + "')");
+        }
     }
 
     @Override
@@ -50,13 +55,18 @@ public class DAO_Adres implements DAOInterface {
         String postcode = ((Adres) obj).getPostcode();
         String woonplaats = ((Adres) obj).getWoonplaats();
 
-        if (connection == null) {
-            connection = DAO_Manager.initializeDB();
+        if(straatnaam == null || huisnummer == 0 || postcode == null || woonplaats == null){
+            throw new IllegalArgumentException("Geen volledig adres!");
+            
         }
-        Statement statement = connection.createStatement();
-        statement.executeUpdate("update Adres set straatnaam = '" + straatnaam + "', huisnummer = '" + huisnummer + "', toevoeging = '" + toevoeging + "', postcode = '"
-                + postcode + "', woonplaats = '" + woonplaats + "' where id = " + id);
-
+        else{
+            if (connection == null) {
+                connection = DAO_Manager.initializeDB();
+            }
+            Statement statement = connection.createStatement();
+            statement.executeUpdate("update Adres set straatnaam = '" + straatnaam + "', huisnummer = '" + huisnummer + "', toevoeging = '" + toevoeging + "', postcode = '"
+                    + postcode + "', woonplaats = '" + woonplaats + "' where id = " + id);
+        }
     }
 
     @Override
@@ -127,9 +137,12 @@ public class DAO_Adres implements DAOInterface {
             connection = DAO_Manager.initializeDB();
         }
         Statement statement = connection.createStatement();
-
-        statement.executeUpdate("delete from Adres where id = " + id);
-
+        try{
+            statement.executeUpdate("delete from Adres where id = " + id);
+        }
+        catch(Exception ex){
+            throw new IllegalArgumentException("Geen adres gevonden op dit ID");
+        }
     }
 
 }

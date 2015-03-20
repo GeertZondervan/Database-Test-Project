@@ -4,6 +4,12 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/Chi/Documents/NetBeansProjects/Database-Test-Project/test/DAO/DAO_ResultaatTest.java</file>
+            <file>file:/C:/Users/Chi/Documents/NetBeansProjects/Database-Test-Project/test/DAO/DAO_ManagerTest.java</file>
+            <file>file:/C:/Users/Chi/Documents/NetBeansProjects/Database-Test-Project/test/DAO/DAO_AdresTest.java</file>
+            <file>file:/C:/Users/Chi/Documents/NetBeansProjects/Database-Test-Project/test/DAO/DAO_PersoonTest.java</file>
+            <file>file:/C:/Users/Chi/Documents/NetBeansProjects/Database-Test-Project/src/DAO/DAO_Adres.java</file>
+            <file>file:/C:/Users/Chi/Documents/NetBeansProjects/Database-Test-Project/src/DAO/DAO_Persoon.java</file>
+            <file>file:/C:/Users/Chi/Documents/NetBeansProjects/Database-Test-Project/src/DAO/DAO_Resultaat.java</file>
         </group>
     </open-files>
 </project-private>

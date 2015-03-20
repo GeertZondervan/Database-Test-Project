@@ -4,7 +4,7 @@ public class Adres implements POJO_Interface {
 
     private int id;
     private String straatnaam;
-    private Integer huisnummer;
+    private int huisnummer;
     private String toevoeging;
     private String postcode;
     private String woonplaats;
