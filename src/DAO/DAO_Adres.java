@@ -100,14 +100,10 @@ public class DAO_Adres implements DAOInterface {
         }
         return -1;
     }
-<<<<<<< 21e11486174e7818b37d0c193910f887557d22f6
+
 
     public int getAdresId(String postcode, int huisnummer, String toevoeging) throws SQLException {
-=======
-    
-   
-    public int getAdresId(String postcode, int huisnummer) throws SQLException {
->>>>>>> e5bd7032fb704c473b1a96a2834febb3e07c33d2
+
         if (connection == null) {
             connection = DAO_Manager.initializeDB();
         }
@@ -115,19 +111,13 @@ public class DAO_Adres implements DAOInterface {
 
         ResultSet rSet = statement
                 .executeQuery("select id from Adres where postcode = '"
-<<<<<<< 21e11486174e7818b37d0c193910f887557d22f6
                         + postcode + "' and huisnummer = " + huisnummer + " and toevoeging = '" + toevoeging + "'");
-
-        rSet.next();
-        return rSet.getInt(1);
-=======
-                        + postcode + "' and huisnummer = " + huisnummer);
 
         if (rSet.next()) {
             return rSet.getInt(1);
         }
         return -1;
->>>>>>> e5bd7032fb704c473b1a96a2834febb3e07c33d2
+
     }
 
     @Override
